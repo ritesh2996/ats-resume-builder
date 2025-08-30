@@ -88,3 +88,49 @@ body{
 .skills{ display:flex; gap:.5rem; flex-wrap:wrap; list-style: none; padding-left:0; }
 .skills li{ background:#e9eefc; color:#0b1020; padding:.2rem .5rem; border-radius: 999px; font-weight:600; }
 .muted{ color:#6b7280; }
+/* Navigation Buttons */
+.nav-btn {
+  padding: 8px 16px;
+  margin-left: 10px;
+  border-radius: 20px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+/* Default Style */
+.nav-btn {
+  color: #333;
+  background: transparent;
+}
+
+/* Filled button (Sign Up) */
+.nav-btn.filled {
+  background: #007bff;
+  color: white;
+  border: 2px solid #007bff;
+}
+
+.nav-btn.filled:hover {
+  background: #0056b3;
+  border-color: #0056b3;
+}
+
+/* Outline button (Logout) */
+.nav-btn.outline {
+  border: 2px solid #ff4b4b;
+  color: #ff4b4b;
+  background: transparent;
+}
+
+.nav-btn.outline:hover {
+  background: #ff4b4b;
+  color: white;
+}
+
+/* Normal Links (Login, Dashboard) */
+.nav-btn:hover {
+  color: #007bff;
+  transform: translateY(-2px);
+}

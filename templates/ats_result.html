@@ -16,7 +16,8 @@
         />
         <path
           class="progress"
-          stroke-dasharray="{{ score }}, 100"
+          stroke-dasharray="100, 100"
+          stroke-dashoffset="{{ 100 - score }}"
           d="M18 2.0845
              a 15.9155 15.9155 0 0 1 0 31.831
              a 15.9155 15.9155 0 0 1 0 -31.831"
@@ -26,12 +27,16 @@
     </div>
   </div>
 
-  <h3>Suggestions to improve your resume:</h3>
-  <ul class="suggestions">
-    {% for s in suggestions %}
-      <li>{{ s }}</li>
-    {% endfor %}
-  </ul>
+  {% if suggestions %}
+    <h3>Suggestions to improve your resume:</h3>
+    <ul class="suggestions">
+      {% for s in suggestions %}
+        <li>{{ s }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>✅ Your resume already looks strong! No major suggestions.</p>
+  {% endif %}
 
   <a href="{{ url_for('resumes.dashboard') }}" class="btn primary">Back to Resume</a>
 </div>
@@ -39,11 +44,11 @@
 <style>
 .ats-container { text-align: center; padding: 20px; }
 .progress-circle { position: relative; width: 150px; margin: 20px auto; }
-svg { width: 150px; height: 150px; }
+svg { width: 150px; height: 150px; transform: rotate(-90deg); } /* start from top */
 .bg { fill: none; stroke: #eee; stroke-width: 3.8; }
-.progress { fill: none; stroke: #4CAF50; stroke-width: 3.8; stroke-linecap: round; }
+.progress { fill: none; stroke: #4CAF50; stroke-width: 3.8; stroke-linecap: round; transition: stroke-dashoffset 1s ease; }
 .score-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px; font-weight: bold; }
 .suggestions { list-style: none; padding: 0; margin-top: 20px; }
-.suggestions li { background: #f9f9f9; padding: 10px; margin: 5px auto; width: 60%; border-radius: 8px; text-align: left; }
+.suggestions li { background: #000000; padding: 10px; margin: 5px auto; width: 60%; border-radius: 8px; text-align: left; }
 </style>
 {% endblock %}

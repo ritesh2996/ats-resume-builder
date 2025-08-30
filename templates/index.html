@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}BeamClone — Simple Resume Builder{% endblock %}
+{% block title %}CareerSphere- Simple Resume Builder{% endblock %}
 {% block content %}
 <section class="hero">
   <div class="hero-text">
@@ -12,16 +12,7 @@
       <a class="btn primary" href="{{ url_for('auth.register_get') }}">Get Started</a>
     {% endif %}
 
-    <!-- 🔹 New buttons -->
-    <div class="mt-4">
-      <!-- ✅ Fixed: use POST form for creating new resume -->
-      <form action="{{ url_for('resumes.create_resume') }}" method="post" style="display:inline;">
-        <button type="submit" class="btn secondary">Build New Resume</button>
-      </form>
-
-      <button class="btn outline" id="linkedinImportBtn">Import from LinkedIn</button>
-      <a class="btn success" href="{{ url_for('ats.ats_result') }}">Check ATS Score</a>
-    </div>
+    <button class="btn outline" id="linkedinImportBtn" style="margin-top:12px;">Import from LinkedIn</button>
   </div>
 
   <div class="hero-card">
@@ -33,6 +24,30 @@
       <li>✓ ATS Score Match %</li>
     </ul>
   </div>
+</section>
+
+<!-- 🔹 ATS Score Checker Section -->
+<section class="ats-checker" style="margin-top:40px; text-align:center;">
+  <h2 style="margin-bottom:15px;">📊 Check Your Resume ATS Score</h2>
+
+  <form action="{{ url_for('ats.check_ats') }}" method="post" enctype="multipart/form-data" 
+        style="margin:0 auto; max-width:520px; background:#f9f9f9; padding:20px; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+
+    <!-- Job Description -->
+    <label for="job_description" style="font-weight:600; margin-bottom:6px; display:block; text-align:left;color:#030d44">Job Description (optional)</label>
+    <textarea name="job_description" id="job_description" 
+              placeholder="Paste job description here..." 
+              rows="4" 
+              style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px; border:1px solid #ccc;"></textarea>
+
+    <!-- Resume Upload -->
+    <label for="resume_file" style="font-weight:600; margin-bottom:6px; display:block; text-align:left;color:#030d44">Upload Resume</label>
+    <input type="file" name="resume_file" id="resume_file" accept=".pdf,.docx" required
+           style="display:block; margin-bottom:15px;">
+
+    <!-- Submit -->
+    <button type="submit" class="btn success" style="width:100%;">Check ATS Score</button>
+  </form>
 </section>
 
 <section class="features">
@@ -59,5 +74,69 @@
 document.getElementById("linkedinImportBtn").addEventListener("click", function() {
   alert("⚡ LinkedIn import feature coming soon!");
 });
+</script>
+
+<!-- 🔹 AI Resume Chatbot Section -->
+<section class="chatbot-section" style="margin-top:50px; padding:20px; border:1px solid #ccc; border-radius:12px; background:#030d44;">
+  <h2 style="margin-bottom:15px; color:#fff;">💬 Resume Chatbot Advisor</h2>
+  
+  <div id="chatbox" 
+       style="height:350px; overflow-y:auto; border:1px solid #ddd; 
+              padding:15px; margin-bottom:10px; background:#ffffff; 
+              border-radius:8px; font-family:monospace; line-height:1.5; font-size:14px;">
+  </div>
+
+  <div style="display:flex; gap:10px;">
+    <input type="text" id="userInput" placeholder="Ask me about your resume..." 
+           style="flex:1; padding:12px; border:1px solid #ccc; border-radius:8px;">
+    <button onclick="sendMessage()" 
+            style="padding:12px 20px; border:none; border-radius:8px; background:#10a37f; color:white; cursor:pointer;">
+      Send
+    </button>
+  </div>
+</section>
+
+<!-- 🔹 Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+function renderMessage(sender, message, isUser=false) {
+    const chatbox = document.getElementById("chatbox");
+    const msgContainer = document.createElement("div");
+    msgContainer.style.marginBottom = "12px";
+
+    msgContainer.innerHTML = `
+      <div style="
+        background:${isUser ? '#e6f7ff' : '#f3f3f3'};
+        color:#111;
+        padding:10px 14px;
+        border-radius:10px;
+        max-width:90%;
+        white-space:pre-wrap;
+        overflow-x:auto;
+      ">
+        <b>${sender}:</b><br>${marked.parse(message)}
+      </div>
+    `;
+    chatbox.appendChild(msgContainer);
+    chatbox.scrollTop = chatbox.scrollHeight;
+}
+
+async function sendMessage() {
+    const userInput = document.getElementById("userInput");
+    const message = userInput.value.trim();
+    if (!message) return;
+
+    renderMessage("You", message, true);
+    userInput.value = "";
+
+    const response = await fetch("/chatbot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message })
+    });
+    const data = await response.json();
+
+    renderMessage("AI", data.reply);
+}
 </script>
 {% endblock %}
