@@ -1,0 +1,99 @@
+{% set d = resume.data %}
+{% extends "base.html" %}
+{% block title %}Preview — {{ resume.title }}{% endblock %}
+{% block content %}
+<div class="preview-actions">
+  <a class="btn" href="{{ url_for('resumes.edit_resume', resume_id=resume.id) }}">Back to Editor</a>
+  <a class="btn primary" href="{{ url_for('resumes.download_pdf', resume_id=resume.id) }}">Download PDF</a>
+</div>
+<div class="resume-paper">
+  <header class="resume-header">
+    <h1>{{ d.basics.full_name or 'Your Name' }}</h1>
+    <p class="muted">{{ d.basics.title or 'Your Title' }}</p>
+    <p class="muted">{{ d.basics.email }} {% if d.basics.phone %}• {{ d.basics.phone }}{% endif %} {% if d.basics.location %}• {{ d.basics.location }}{% endif %}</p>
+  </header>
+
+  {% if d.basics.summary %}
+  <section class="resume-section">
+    <h2>Summary</h2>
+    <p>{{ d.basics.summary }}</p>
+  </section>
+  {% endif %}
+
+  {% if d.skills %}
+  <section class="resume-section">
+    <h2>Skills</h2>
+    <ul class="skills">
+      {% for s in d.skills %}<li>{{ s }}</li>{% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  {% if d.experience %}
+  <section class="resume-section">
+    <h2>Experience</h2>
+    {% for e in d.experience %}
+      <div class="item">
+        <div class="row-between">
+          <h3>{{ e.role }}</h3>
+          <span class="muted">{{ e.start }} — {{ e.end or 'Present' }}</span>
+        </div>
+        <div class="muted">{{ e.company }}</div>
+        {% if e.bullets %}
+        <ul>
+          {% for b in e.bullets %}<li>{{ b }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  {% if d.education %}
+  <section class="resume-section">
+    <h2>Education</h2>
+    {% for e in d.education %}
+      <div class="item">
+        <div class="row-between">
+          <h3>{{ e.school }}</h3>
+          <span class="muted">{{ e.start }} — {{ e.end }}</span>
+        </div>
+        <div class="muted">{{ e.degree }}</div>
+        {% if e.details %}<p>{{ e.details }}</p>{% endif %}
+      </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  {% if d.projects %}
+  <section class="resume-section">
+    <h2>Projects</h2>
+    {% for p in d.projects %}
+      <div class="item">
+        <div class="row-between">
+          <h3>{{ p.name }}</h3>
+          {% if p.link %}<a href="{{ p.link }}" target="_blank" rel="noreferrer">{{ p.link }}</a>{% endif %}
+        </div>
+        {% if p.summary %}<p>{{ p.summary }}</p>{% endif %}
+        {% if p.bullets %}
+        <ul>
+          {% for b in p.bullets %}<li>{{ b }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+</div>
+
+{% if pdf_mode %}
+<style>
+  /* Minimal inline CSS for xhtml2pdf compatibility */
+  .resume-paper { font-family: Helvetica, Arial, sans-serif; font-size: 12pt; }
+  .resume-header h1 { margin: 0; }
+  .muted { color: #555; }
+  .resume-section h2 { border-bottom: 1px solid #333; }
+  ul { margin-top: 0.2rem; }
+</style>
+{% endif %}
+{% endblock %}

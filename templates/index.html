@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}BeamClone — Simple Resume Builder{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-text">
+    <h1>Build a job-winning resume in minutes</h1>
+    <p>Create, edit, and download a clean resume as PDF. Save multiple versions. 100% free.</p>
+    {% if current_user.is_authenticated %}
+      <a class="btn primary" href="{{ url_for('resumes.dashboard') }}">Go to Dashboard</a>
+    {% else %}
+      <a class="btn primary" href="{{ url_for('auth.register_get') }}">Get Started</a>
+    {% endif %}
+  </div>
+  <div class="hero-card">
+    <ul>
+      <li>✓ Clean, ATS-friendly template</li>
+      <li>✓ Save your resumes securely</li>
+      <li>✓ Export to PDF</li>
+    </ul>
+  </div>
+</section>
+
+<section class="features">
+  <div class="feature">
+    <h3>Fast Editing</h3>
+    <p>Add experience, education, skills, and projects with simple forms.</p>
+  </div>
+  <div class="feature">
+    <h3>Autosave</h3>
+    <p>Your changes are saved with one click—come back anytime.</p>
+  </div>
+  <div class="feature">
+    <h3>PDF Export</h3>
+    <p>Download a polished PDF using our built-in exporter.</p>
+  </div>
+</section>
+{% endblock %}

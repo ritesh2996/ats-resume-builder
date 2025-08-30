@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — BeamClone{% endblock %}
+{% block content %}
+<h2>Your Resumes</h2>
+
+<form method="post" action="{{ url_for('resumes.create_resume') }}" class="form-inline">
+  <input type="text" name="title" placeholder="Resume title (e.g., Frontend Intern)" />
+  <button class="btn" type="submit">+ New Resume</button>
+</form>
+
+{% if resumes %}
+  <div class="card-grid">
+    {% for r in resumes %}
+      <div class="card">
+        <h3>{{ r.title }}</h3>
+        <p><small>Updated {{ r.updated_at.strftime('%Y-%m-%d %H:%M') if r.updated_at else '' }}</small></p>
+        <div class="row">
+          <a class="btn" href="{{ url_for('resumes.edit_resume', resume_id=r.id) }}">Edit</a>
+          <a class="btn" href="{{ url_for('resumes.preview_resume', resume_id=r.id) }}">Preview</a>
+          <a class="btn" href="{{ url_for('resumes.download_pdf', resume_id=r.id) }}">PDF</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p>You have no resumes yet. Create one above!</p>
+{% endif %}
+{% endblock %}

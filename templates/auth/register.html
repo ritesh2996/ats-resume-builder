@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Register — BeamClone{% endblock %}
+{% block content %}
+<h2>Create your account</h2>
+<form method="post" action="{{ url_for('auth.register_post') }}" class="form-card">
+  <label>Full name
+    <input type="text" name="name" required>
+  </label>
+  <label>Email
+    <input type="email" name="email" required>
+  </label>
+  <label>Password
+    <input type="password" name="password" required minlength="6">
+  </label>
+  <button class="btn primary" type="submit">Create account</button>
+  <p>Already have an account? <a href="{{ url_for('auth.login_get') }}">Login</a></p>
+</form>
+{% endblock %}
