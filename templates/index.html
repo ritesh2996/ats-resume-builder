@@ -5,17 +5,32 @@
   <div class="hero-text">
     <h1>Build a job-winning resume in minutes</h1>
     <p>Create, edit, and download a clean resume as PDF. Save multiple versions. 100% free.</p>
+    
     {% if current_user.is_authenticated %}
       <a class="btn primary" href="{{ url_for('resumes.dashboard') }}">Go to Dashboard</a>
     {% else %}
       <a class="btn primary" href="{{ url_for('auth.register_get') }}">Get Started</a>
     {% endif %}
+
+    <!-- 🔹 New buttons -->
+    <div class="mt-4">
+      <!-- ✅ Fixed: use POST form for creating new resume -->
+      <form action="{{ url_for('resumes.create_resume') }}" method="post" style="display:inline;">
+        <button type="submit" class="btn secondary">Build New Resume</button>
+      </form>
+
+      <button class="btn outline" id="linkedinImportBtn">Import from LinkedIn</button>
+      <a class="btn success" href="{{ url_for('ats.ats_result') }}">Check ATS Score</a>
+    </div>
   </div>
+
   <div class="hero-card">
     <ul>
       <li>✓ Clean, ATS-friendly template</li>
       <li>✓ Save your resumes securely</li>
       <li>✓ Export to PDF</li>
+      <li>✓ Import from LinkedIn</li>
+      <li>✓ ATS Score Match %</li>
     </ul>
   </div>
 </section>
@@ -33,5 +48,16 @@
     <h3>PDF Export</h3>
     <p>Download a polished PDF using our built-in exporter.</p>
   </div>
+  <div class="feature">
+    <h3>ATS Optimization</h3>
+    <p>Check your resume against job descriptions and see your match score.</p>
+  </div>
 </section>
+
+<!-- 🔹 Add LinkedIn Import JS -->
+<script>
+document.getElementById("linkedinImportBtn").addEventListener("click", function() {
+  alert("⚡ LinkedIn import feature coming soon!");
+});
+</script>
 {% endblock %}

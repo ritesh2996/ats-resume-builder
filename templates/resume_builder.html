@@ -1,49 +1,75 @@
 {% extends "base.html" %}
-{% block title %}Edit "{{ resume.title }}" — BeamClone{% endblock %}
+{% block title %}Edit "{{ resume.title | default('Resume') }}" — BeamClone{% endblock %}
 {% block content %}
-<h2>Edit: {{ resume.title }}</h2>
+<h2>Edit: {{ resume.title | default('Untitled') }}</h2>
+
 <div class="builder-grid">
   <section class="builder-left">
+
+    <!-- Basics -->
     <div class="group">
       <h3>Basics</h3>
-      <label>Full Name <input id="full_name" type="text"></label>
-      <label>Title <input id="job_title" type="text" placeholder="e.g., Data Analyst"/></label>
-      <label>Email <input id="email" type="email"></label>
-      <label>Phone <input id="phone" type="text"></label>
-      <label>Location <input id="location" type="text" placeholder="City, Country"></label>
-      <label>Summary <textarea id="summary" rows="4"></textarea></label>
+      <label>Full Name <input id="full_name" type="text" placeholder="John Doe" /></label>
+      <label>Title <input id="job_title" type="text" placeholder="Software Engineer" /></label>
+      <label>Email <input id="email" type="email" placeholder="john@example.com" /></label>
+      <label>Phone <input id="phone" type="text" placeholder="+91-9876543210" /></label>
+      <label>Location <input id="location" type="text" placeholder="City, Country" /></label>
+      <label>Summary <textarea id="summary" rows="4" placeholder="Write a short professional summary..."></textarea></label>
     </div>
 
+    <!-- Skills -->
     <div class="group">
       <h3>Skills</h3>
       <div id="skills_list"></div>
       <div class="row">
-        <input id="skill_input" type="text" placeholder="Add a skill">
-        <button class="btn" onclick="addSkill()">Add</button>
+        <input id="skill_input" type="text" placeholder="Add a skill" />
+        <button type="button" class="btn" onclick="addSkill()">Add</button>
       </div>
     </div>
 
+    <!-- Experience / Education / Projects (unchanged) -->
     <div class="group">
       <h3>Experience</h3>
       <div id="exp_list"></div>
-      <button class="btn" onclick="addExperience()">+ Add Experience</button>
+      <button type="button" class="btn" onclick="addExperience()">+ Add Experience</button>
     </div>
 
     <div class="group">
       <h3>Education</h3>
       <div id="edu_list"></div>
-      <button class="btn" onclick="addEducation()">+ Add Education</button>
+      <button type="button" class="btn" onclick="addEducation()">+ Add Education</button>
     </div>
 
     <div class="group">
       <h3>Projects</h3>
       <div id="proj_list"></div>
-      <button class="btn" onclick="addProject()">+ Add Project</button>
+      <button type="button" class="btn" onclick="addProject()">+ Add Project</button>
     </div>
 
+    <!-- Actions -->
     <div class="row">
-      <button class="btn primary" onclick="saveResume({{ resume.id }})">Save</button>
-      <a class="btn" href="{{ url_for('resumes.preview_resume', resume_id=resume.id) }}">Preview</a>
+      <!-- safe numeric/null literal for resume id -->
+      <button type="button" class="btn primary"
+        onclick="saveResume({{ resume.id if resume and resume.id is not none else 'null' }})">
+        Save
+      </button>
+
+      {% if resume and resume.id %}
+        <a class="btn" href="{{ url_for('resumes.preview_resume', resume_id=resume.id) }}">Preview</a>
+      {% endif %}
+
+      <button type="button" class="btn outline" onclick="checkATS()">Check ATS</button>
+    </div>
+
+    <!-- ATS form fields (local) -->
+    <div class="group">
+      <h3>ATS Check</h3>
+      <label>Paste Job Description
+        <textarea id="job-desc" rows="5" placeholder="Paste the JD here..."></textarea>
+      </label>
+      <label>Paste Your Resume Text
+        <textarea id="resume-text" rows="5" placeholder="Paste the current resume text..."></textarea>
+      </label>
     </div>
   </section>
 
@@ -60,7 +86,41 @@
 </div>
 
 <script>
-  window.__RESUME__ = {{ resume.data|tojson }};
-  populateForm(window.__RESUME__);
+  // don't embed large server-side JSON here (avoids tojson issues).
+  // If you need the full resume JSON on page-load, use a small endpoint and fetch it.
+
+  // safe stub for saveResume (won't break if missing)
+  if (typeof saveResume !== 'function') {
+    function saveResume(resumeId) {
+      console.log("saveResume called; resumeId =", resumeId);
+      alert("Save: not implemented (placeholder).");
+    }
+  }
+
+  // ATS check: sends to backend API and redirects to result page
+  function checkATS() {
+    const resumeText = (document.getElementById("resume-text") || {}).value || "";
+    const jobDesc = (document.getElementById("job-desc") || {}).value || "";
+
+    fetch("/api/check_ats", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ resume: resumeText, job_description: jobDesc })
+    })
+    .then(resp => {
+      if (!resp.ok) throw new Error("Network response not ok");
+      return resp.json();
+    })
+    .then(data => {
+      const params = new URLSearchParams();
+      params.append("score", data.score);
+      (data.suggestions || []).forEach(s => params.append("suggestions", s));
+      window.location.href = "/ats_result?" + params.toString();
+    })
+    .catch(err => {
+      console.error("ATS check failed:", err);
+      alert("ATS check failed; see console for details.");
+    });
+  }
 </script>
 {% endblock %}

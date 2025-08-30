@@ -1,10 +1,11 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, request
 from flask_login import LoginManager, current_user
 from database import db
 from models import User
 from config import Config
 from auth import auth_bp
 from resumes import resumes_bp
+from ats import ats_bp   # ⬅️ NEW ATS blueprint
 
 def create_app():
     app = Flask(__name__)
@@ -25,6 +26,7 @@ def create_app():
     # Blueprints
     app.register_blueprint(auth_bp)
     app.register_blueprint(resumes_bp)
+    app.register_blueprint(ats_bp)  # ⬅️ Register ATS
 
     @app.get("/")
     def index():
